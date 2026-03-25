@@ -11,13 +11,13 @@ async function moveFile() {
   const pathToMove = args[1];
 
   if (!originPath) {
-    console.error('File does not exist');
+    console.error('Source file path was not provided');
 
     return;
   }
 
   if (!pathToMove) {
-    console.error('Path to move does not exist');
+    console.error('Destination path was not provided');
 
     return;
   }
@@ -26,9 +26,23 @@ async function moveFile() {
     return;
   }
 
-  try {
-    await fs.access(originPath);
+  let sourceStat;
 
+  try {
+    sourceStat = await fs.stat(originPath);
+  } catch (e) {
+    console.error('File does not exist');
+
+    return;
+  }
+
+  if (sourceStat.isDirectory()) {
+    console.error('Error: Source is a directory');
+
+    return;
+  }
+
+  try {
     let finalDest = pathToMove;
 
     try {
@@ -47,11 +61,7 @@ async function moveFile() {
 
     await fs.rename(originPath, finalDest);
   } catch (error) {
-    if (error.code === 'ENOENT') {
-      console.error('File does not exist');
-    } else {
-      console.error('Error:', error.message);
-    }
+    console.error('Error:', error.message);
   }
 }
 
