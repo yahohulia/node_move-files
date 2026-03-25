@@ -26,7 +26,7 @@ async function moveFile() {
     return;
   }
 
-  let sourceStat;
+  let sourceStat = null;
 
   try {
     sourceStat = await fs.stat(originPath);
